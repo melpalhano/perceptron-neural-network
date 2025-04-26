@@ -39,9 +39,9 @@ Este trabalho visa explorar o impacto da taxa de aprendizado (α) e da inicializ
 ```
 @autor:                Melissa Rodrigues Palhano 
 @contato:              mlsspalhano@gmail.com | melissa.palhano@discente.ufma.br  
-@data última versão:   20/04/2025  
+@data última versão:   26/04/2025  
 @versão:               1.0  
-@outros repositórios:  [URLs opcionais]  
+@outros repositórios:  -
 @Agradecimentos:       Universidade Federal do Maranhão (UFMA),  
                        Prof. Dr. Thales Levi Azevedo Valente, thales.l.a.valente@gmail.com
                        https://www.linkedin.com/in/thalesvalente/
@@ -57,7 +57,7 @@ Este trabalho visa explorar o impacto da taxa de aprendizado (α) e da inicializ
 ```
 MIT License
 
-Copyright (c) 20/04/2025
+Copyright (c) 26/04/2025
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -18,6 +18,8 @@ This script performs the following tasks:
 
 
 import numpy as np
+import matplotlib
+matplotlib.use('TkAgg')  
 import matplotlib.pyplot as plt
 import os
 
@@ -111,223 +113,167 @@ def main():
     input("Programa pausado. Pressione Enter para continuar...")
 
     print('Plotando os dados...')
-    # Carrega os dados de treinamento a partir do arquivo ex1data1.txt
-    # O arquivo contém duas colunas: a primeira com a população da cidade
-    # (em dezenas de milhar) e a segunda com o lucro (em dezenas de mil dólares).
-    # Os dados são carregados usando a função np.loadtxt do NumPy.
-    # A função np.loadtxt lê os dados do arquivo e os armazena em um array NumPy.
+    # Carrega os dados de treinamento
     data = np.loadtxt('Data/ex1data1.txt', delimiter=',')
-    # Separa os dados em duas variáveis: x e y
-    # x contém a população da cidade (em dezenas de milhar)
-    # y contém o lucro (em dezenas de mil dólares)
-    # A primeira coluna de data é a população (x), a feature
-    # que será usada para prever o lucro.
-    x = data[:, ]
-    # A segunda coluna de data é o lucro (y), a label ou target
-    y = data[:, ]
-    # Agora, obtemos o número de exemplos de treinamento (m)
-    m = 
+    x = data[:, 0]  # População
+    y = data[:, 1]  # Lucro
+    m = len(y)  # número de exemplos
 
-    # Plotagem dos dados
-    # Utiliza a função plot_data para exibir os pontos (x, y) em um gráfico 2D.
-    # A função está definida em Functions/plot_data.py
-    # e foi importada no início do arquivo.
-    plot_data(, )
+    # Plotagem dos dados iniciais
+    plt.figure(figsize=(10, 6))
+    plt.plot(x, y, 'rx', markersize=10, label='Dados de Treino')
+    plt.xlabel('População da Cidade em 10,000s')
+    plt.ylabel('Lucro em $10,000s')
+    plt.title('Dados de Treinamento')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('Figures/dados_treino.png')
+    plt.savefig('Figures/dados_treino.svg')
+    plt.show()
 
-    input("Programa pausado. Pressione Enter para continuar...")
-
-    # Preparação dos dados para o algoritmo de descida do gradiente
-    # Adiciona uma coluna de 1s à matriz x para representar o termo de interceptação (bias).
-    # Isso é feito com np.column_stack, combinando uma coluna de 1s com os valores de x.
-    # A nova matriz x_aug terá duas colunas: a primeira com 1s e a segunda com os valores originais de x.
-    x_aug = 
-
-    # Inicialização de theta como um vetor nulo (vetor de zeros)
-    # Inicializa o vetor de parâmetros theta como um vetor nulo com 2 elementos (theta[0] e theta[1]).
-    # O primeiro elemento representa o intercepto (bias) e o segundo o coeficiente angular (inclinação).
-    # Esse vetor será ajustado durante a execução do algoritmo de descida do gradiente.
-    theta = 
-
-    # Parâmetros da descida do gradiente
-    # Define o número de iterações e a taxa de aprendizado (alpha)
-    # O número de iterações determina quantas vezes os parâmetros serão atualizados.
+    # Preparação dos dados
+    x_aug = np.column_stack((np.ones(m), x))
+    
+    # Parâmetros iniciais
+    theta = np.zeros(2)
     iterations = 1500
-
-    # A taxa de aprendizado (alpha) controla o tamanho do passo dado em cada iteração do algoritmo de descida do gradiente.
-    # Um alpha muito grande pode fazer o algoritmo divergir, enquanto um muito pequeno pode torná-lo lento.
-    # Aqui, alpha é definido como 0.01, um valor comumente usado em problemas de regressão linear.
-    # Você pode experimentar outros valores para ver como o algoritmo se comporta.
     alpha = 0.01
 
     print('\nTestando a função de custo...')
-    # Utiliza a função compute_cost para calcular o custo com os parâmetros iniciais (theta = [0, 0]).
-    # Essa função mede o quão bem os parâmetros atuais se ajustam aos dados de treinamento.
-    # Ela está definida em Functions/compute_cost.py e foi importada anteriormente.
-    # Os parâmetros de entrada são a matriz x_aug (com 1s e valores de x), o vetor y (lucro) e o vetor theta (parâmetros).
-    cost = 
+    cost = compute_cost(x_aug, y, theta)
     print(f'Com theta = [0 ; 0]\nCusto calculado = {cost:.2f}')
-    print('Valor esperado para o custo (aproximadamente): 32.07')
 
-    # Testando a função de custo com outro valor de theta
-    # Aqui, testamos a função de custo com um valor diferente de theta ([-1, 2]).
-    # Isso nos permite verificar se a função de custo está funcionando corretamente.
-    # O valor de theta = [-1, 2] é um exemplo e não representa o ajuste ideal.
-    cost = 
-    print(f'\nCom theta = [-1 ; 2]\nCusto calculado = {cost:.2f}')
-    print('Valor esperado para o custo (aproximadamente): 54.24')
-
-    input("Programa pausado. Pressione Enter para continuar...")
-
+    # Executa a descida do gradiente
     print('\nExecutando a descida do gradiente...')
-    # Executa o algoritmo de descida do gradiente para encontrar os parâmetros ótimos (theta).
-    # A função gradient_descent é definida em Functions/gradient_descent.py
-    # e foi importada anteriormente.
-    # Ela recebe como parâmetros a matriz x_aug (com 1s e valores de x), o vetor y (lucro),
-
-    # Após os testes, inicializamos os parâmetros theta com valores diferentes de zero.
-    # theta = [8.5, 4.0] é o ponto de partida padrão. Foi estabelecido empiricamente ao olhar os gráficos.
-    # Você pode experimentar outros valores para ver como o algoritmo se comporta.
-    theta = np.array([, ])
-    # o vetor theta, a taxa de aprendizado (alpha) e o número de iterações.
-    # A função retorna os parâmetros ajustados (theta), o histórico de custos (J_history) e o histórico de theta (theta_history).
-    # O histórico de custos é usado para visualizar a convergência do algoritmo.
-    # O histórico de theta é usado para visualizar a trajetória do gradiente na superfície da função de custo.
-    theta, J_history, theta_history = gradient_descent(, , , , )
-
+    theta, J_history, theta_history = gradient_descent(x_aug, y, theta, alpha, iterations)
     print('Parâmetros theta encontrados pela descida do gradiente:')
-    print(theta)
-    print('Valores esperados para theta (aproximadamente):')
-    print(' -3.6303\n  1.1664')
+    print(f'theta = [{theta[0]:.4f}, {theta[1]:.4f}]')
 
-    # 1. Gráfico da convergência da função de custo
-    plt.figure(figsize=(8, 5))
-    plt.plot(np.arange(1, iterations + 1), J_history, 'b-', linewidth=2)
-    plt.xlabel('Iteração')
+    # Plot da convergência do custo
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, len(J_history) + 1), J_history, 'b-')
+    plt.xlabel('Número de Iterações')
     plt.ylabel('Custo J(θ)')
     plt.title('Convergência da Descida do Gradiente')
-    plt.savefig("Figures/convergencia_custo.png", dpi=300, bbox_inches='tight')
-    plt.savefig("Figures/convergencia_custo.svg", format='svg', bbox_inches='tight')
     plt.grid(True)
+    plt.savefig('Figures/convergencia_basica.png')
+    plt.savefig('Figures/convergencia_basica.svg')
     plt.show()
 
-    # 2. Gráfico do Ajuste da Regressão Linear
-    plt.figure(figsize=(8, 5))
-    plt.plot(x, y, 'rx', markersize=5, label='Dados de treino')
-    plt.plot(x, x_aug @ theta, 'b-', linewidth=2, label='Regressão linear')
-    plt.xlabel('População da cidade (em dezenas de mil)')
-    plt.ylabel('Lucro (em dezenas de mil dólares)')
-    plt.title('Ajuste da Regressão Linear')
+    # Plot da linha de regressão
+    plt.figure(figsize=(10, 6))
+    plt.plot(x, y, 'rx', markersize=10, label='Dados de Treino')
+    plt.plot(x, x_aug @ theta, 'b-', label='Regressão Linear')
+    plt.xlabel('População da Cidade em 10,000s')
+    plt.ylabel('Lucro em $10,000s')
+    plt.title('Regressão Linear Ajustada')
     plt.legend()
     plt.grid(True)
+    plt.savefig('Figures/regressao_ajustada.png')
+    plt.savefig('Figures/regressao_ajustada.svg')
     plt.show()
 
-    # Previsões usando theta ajustado
-    predict1 = np.array([1, 3.5]) @ theta
-    predict2 = np.array([1, 7.0]) @ theta
-    print(f'\nPara população = 35.000, lucro previsto = ${predict1 * 10000:.2f}')
-    print(f'Para população = 70.000, lucro previsto = ${predict2 * 10000:.2f}')
-    input("Programa pausado. Pressione Enter para continuar...")
+    # Experimentos com diferentes taxas de aprendizado (α)
+    print('\nExecutando experimentos com diferentes taxas de aprendizado...')
+    alphas = [0.003, 0.01, 0.03]  # Valores mais conservadores
+    thetas_init = np.zeros(2)
+    plt.figure(figsize=(10, 6))
+    
+    for alpha in alphas:
+        theta, J_history, _ = gradient_descent(x_aug, y, thetas_init.copy(), alpha, iterations)
+        plt.plot(range(1, len(J_history) + 1), J_history, label=f'α = {alpha}')
+    
+    plt.xlabel('Número de Iterações')
+    plt.ylabel('Custo J(θ)')
+    plt.title('Convergência para Diferentes Taxas de Aprendizado')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('Figures/convergencia_alphas.png')
+    plt.savefig('Figures/convergencia_alphas.svg')
+    plt.show()
 
-    # 3. Gráfico de superfície 3D da função de custo J(θ₀, θ₁)
-    print('Visualizando a função J(theta_0, theta_1) – superfície 3D...')
+    # Experimentos com diferentes inicializações de theta
+    print('\nExecutando experimentos com diferentes inicializações de theta...')
+    alpha_fixed = 0.01
+    thetas_init = [
+        np.array([0., 0.]),
+        np.array([1., 1.]),
+        np.array([-1., 1.]),
+        np.random.randn(2) * 0.5,  # Reduzindo a escala das inicializações aleatórias
+        np.random.randn(2) * 0.5,
+        np.random.randn(2) * 0.5
+    ]
+
+    # Configuração dos subplots
+    plt.figure(figsize=(15, 6))
+    
+    # Plot das diferentes retas de regressão
+    plt.subplot(121)
+    plt.plot(x, y, 'rx', markersize=10, label='Dados de Treino')
+    
+    for i, theta_init in enumerate(thetas_init[:3]):
+        theta, _, _ = gradient_descent(x_aug, y, theta_init.copy(), alpha_fixed, iterations)
+        plt.plot(x, x_aug @ theta, label=f'θ inicial = [{theta_init[0]:.1f}, {theta_init[1]:.1f}]')
+    
+    plt.xlabel('População da Cidade em 10,000s')
+    plt.ylabel('Lucro em $10,000s')
+    plt.title('Regressão Linear com Diferentes Inicializações')
+    plt.legend()
+    plt.grid(True)
+
+    # Gráfico de contorno com trajetórias
+    plt.subplot(122)
     theta0_vals = np.linspace(-10, 10, 100)
     theta1_vals = np.linspace(-1, 4, 100)
-    j_vals = np.zeros((len(theta0_vals), len(theta1_vals)))
+    J_vals = np.zeros((len(theta0_vals), len(theta1_vals)))
+    
     for i, t0 in enumerate(theta0_vals):
         for j, t1 in enumerate(theta1_vals):
-            j_vals[i, j] = compute_cost(x_aug, y, np.array([t0, t1]))
-    j_vals = j_vals.T
-
-    fig = plt.figure(figsize=(8, 6))
-    ax = fig.add_subplot(111, projection='3d')
-    t0_mesh, t1_mesh = np.meshgrid(theta0_vals, theta1_vals)
-    ax.plot_surface(t0_mesh, t1_mesh, j_vals, cmap='viridis', edgecolor='none')
-    ax.set_xlabel(r'$\theta_0$')
-    ax.set_ylabel(r'$\theta_1$')
-    ax.set_zlabel('Custo')
-    plt.title('Superfície da Função de Custo')
-    plt.show()
-
-    # 4. Gráfico de contorno da função de custo
-    print('Visualizando a função J(theta_0, theta_1) – contorno...')
-    plt.figure(figsize=(8, 5))
-    plt.contour(theta0_vals, theta1_vals, j_vals, levels=np.logspace(-2, 3, 20))
-    plt.plot(theta[0], theta[1], 'rx', markersize=10, linewidth=2)
-    plt.xlabel(r'$\theta_0$')
-    plt.ylabel(r'$\theta_1$')
-    plt.title('Contorno da Função de Custo')
-    plt.grid(True)
-    plt.show()
-
-    # 5) Contorno da função de custo + trajetória do gradiente
-    plt.figure(figsize=(8, 5))
-    # desenha as linhas de contorno
-    cs = plt.contour(theta0_vals, theta1_vals, j_vals,
-                     levels=np.logspace(-2, 3, 20))
-    plt.clabel(cs, inline=1, fontsize=8)  # mostra valores de custo nas linhas
-
-    # sobrepõe a trajetória dos thetas
-    plt.plot(theta_history[:, 0], theta_history[:, 1],
-             'r.-', markersize=6, label='Trajetória do gradiente')
-
-    plt.xlabel(r'$\theta_0$')
-    plt.ylabel(r'$\theta_1$')
-    plt.title('Contorno da Função de Custo com Trajetória')
+            J_vals[i, j] = compute_cost(x_aug, y, np.array([t0, t1]))
+    
+    J_vals = J_vals.T
+    plt.contour(theta0_vals, theta1_vals, J_vals, levels=np.logspace(-2, 3, 20))
+    
+    colors = ['r', 'g', 'b', 'c', 'm', 'y']
+    for i, theta_init in enumerate(thetas_init):
+        _, _, theta_history = gradient_descent(x_aug, y, theta_init.copy(), alpha_fixed, iterations)
+        plt.plot(theta_history[:, 0], theta_history[:, 1], 
+                f'{colors[i]}.-', label=f'Trajetória {i+1}')
+    
+    plt.xlabel('θ₀')
+    plt.ylabel('θ₁')
+    plt.title('Contorno da Função Custo com Trajetórias')
     plt.legend()
     plt.grid(True)
-    plt.savefig("Figures/contorno_trajetoria.png", dpi=300, bbox_inches='tight')
-    plt.savefig("Figures/contorno_trajetoria.svg", format='svg', bbox_inches='tight')
+    
+    plt.tight_layout()
+    plt.savefig('Figures/experimentos_theta.png')
+    plt.savefig('Figures/experimentos_theta.svg')
     plt.show()
 
-    # 7) Superfície da função de custo com trajetória 3D melhor visualizada
-    fig = plt.figure(figsize=(8, 6))
+    # Gráfico 3D da superfície de custo
+    fig = plt.figure(figsize=(12, 8))
     ax = fig.add_subplot(111, projection='3d')
-
-    # 7.1 Plota a superfície semitransparente
-    surf = ax.plot_surface(
-        t0_mesh, t1_mesh, j_vals,
-        cmap='viridis',
-        edgecolor='none',
-        alpha=0.6       # deixa a superfície semitransparente
-    )
-
-    # 7.2 Ajusta ângulo de visão
-    ax.view_init(elev=18, azim=-18, roll=-5)
-
-    # 7.3 Trajetória do gradiente em linha vermelha grossa
-    costs = np.concatenate(
-        ([compute_cost(x_aug, y, theta_history[0])], J_history)
-    )
-
-    # Inserindo a trajetória 3D do gradiente
-    # theta_history: shape (iter+1, 2), J_history: shape (iter,)
-    ax.plot(
-        theta_history[:, 0], 
-        theta_history[:, 1], costs,
-        color='red',
-        linewidth=3,
-        marker='o',
-        markersize=4,
-        label='Trajetória do gradiente'
-    )
-
-    # 7.4 Destacar ponto inicial e final
-    ax.scatter(
-        theta_history[0, 0], theta_history[0, 1], costs[0],
-        color='blue', s=50, label='Início'
-    )
-    ax.scatter(
-        theta_history[-1, 0], theta_history[-1, 1], costs[-1],
-        color='green', s=50, label='Convergência'
-    )
     
-    ax.set_xlabel(r'$\theta_0$')
-    ax.set_ylabel(r'$\theta_1$')
-    ax.set_zlabel('Custo')
-    plt.title('Superfície da Função de Custo com Trajetória 3D')
+    theta0_mesh, theta1_mesh = np.meshgrid(theta0_vals, theta1_vals)
+    surf = ax.plot_surface(theta0_mesh, theta1_mesh, J_vals, 
+                          cmap='viridis', alpha=0.6)
+    
+    for i, theta_init in enumerate(thetas_init[:3]):
+        _, J_hist, theta_history = gradient_descent(x_aug, y, theta_init.copy(), alpha_fixed, iterations)
+        costs = np.array([compute_cost(x_aug, y, th) for th in theta_history])
+        ax.plot3D(theta_history[:, 0], theta_history[:, 1], costs, 
+                 f'{colors[i]}.-', label=f'Trajetória {i+1}')
+    
+    ax.set_xlabel('θ₀')
+    ax.set_ylabel('θ₁')
+    ax.set_zlabel('J(θ)')
+    ax.set_title('Superfície da Função Custo com Trajetórias')
+    plt.colorbar(surf)
     ax.legend()
-    plt.savefig("Figures/superficie_trajetoria.png", dpi=300, bbox_inches='tight')
-    plt.savefig("Figures/superficie_trajetoria.svg", format='svg', bbox_inches='tight')
+    
+    plt.savefig('Figures/superficie_3d.png')
+    plt.savefig('Figures/superficie_3d.svg')
     plt.show()
 
 
