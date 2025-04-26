@@ -1,45 +1,35 @@
-from pathlib import Path
-
-# Código Python corrigido com boas práticas
 import os
-import subprocess
 import sys
-from pathlib import Path
+import subprocess
+import platform
 
-
-def create_venv(env_name="regressao-linear-ex1"):
-    """
-    Cria um ambiente virtual com o nome especificado.
-    """
-    import venv
-
-    print(f"🔧 Criando ambiente virtual '{env_name}'...")
-    builder = venv.EnvBuilder(with_pip=True)
-    builder.create(env_name)
-    print(f"✅ Ambiente virtual '{env_name}' criado com sucesso.")
-
-
-def install_requirements(env_name="regressao-linear-ex1", req_file="REQUIREMENTS.txt"):
-    """
-    Instala os pacotes do arquivo REQUIREMENTS.txt dentro do ambiente virtual.
-    """
-    if os.name == "nt":
-        pip_path = os.path.join(env_name, "Scripts", "pip.exe")
-        activate_cmd = f".\\{env_name}\\Scripts\\activate && python ex1.py"
+def main():
+    """Script para configurar o ambiente de desenvolvimento automaticamente."""
+    
+    print("🚀 Configurando ambiente para o projeto de Regressão Linear...")
+    
+    # Verifica se o Conda está instalado
+    try:
+        subprocess.run(['conda', '--version'], check=True)
+    except:
+        print("❌ Conda não encontrado. Por favor, instale o Anaconda ou Miniconda primeiro.")
+        sys.exit(1)
+        
+    # Cria o ambiente conda usando o arquivo environment.yml
+    print("\n📦 Criando ambiente conda...")
+    subprocess.run(['conda', 'env', 'create', '-f', 'environment.yml'], check=True)
+    
+    # Instruções de ativação baseadas no sistema operacional
+    if platform.system() == "Windows":
+        activate_cmd = "conda activate regressao-linear-ex1"
     else:
-        pip_path = os.path.join(env_name, "bin", "pip")
-        activate_cmd = f"source ./{env_name}/bin/activate && python ex1.py"
-
-    print(f"📦 Instalando dependências do arquivo '{req_file}'...")
-    subprocess.check_call([pip_path, "install", "-r", req_file])
-    print("✅ Instalação concluída com sucesso.\n")
-    print("🚀 Para ativar o ambiente e executar o projeto, use:")
-    print(f"  {activate_cmd}")
-
+        activate_cmd = "source activate regressao-linear-ex1"
+        
+    print("\n✅ Ambiente configurado com sucesso!")
+    print("\nPara ativar o ambiente, execute:")
+    print(f"\n    {activate_cmd}")
+    print("\nDepois execute:")
+    print("    python regressao-linear-ex1.py")
 
 if __name__ == "__main__":
-    create_venv()
-    if Path("REQUIREMENTS.txt").exists():
-        install_requirements()
-    else:
-        print("⚠️ Arquivo 'REQUIREMENTS.txt' não encontrado. Crie um e liste suas dependências.")
+    main()

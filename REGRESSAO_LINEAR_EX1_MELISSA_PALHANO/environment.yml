@@ -1,0 +1,12 @@
+name: regressao-linear-ex1
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy>=1.21.0
+  - matplotlib>=3.7.0
+  - pyqt
+  - qt
+  - tk
+  - pip 
