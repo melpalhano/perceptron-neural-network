@@ -5,7 +5,7 @@
 @details Este módulo contém funções para normalizar as features de um dataset
           utilizando diferentes abordagens, como média e desvio padrão, ou
           mínimo e máximo.
-@author Your Name <your.email@example.com>
+@author Melissa Rodrigues Palhano
 """
 import numpy as np
 
@@ -27,10 +27,10 @@ def features_normalize_by_std(X):
         - sigma (ndarray): Vetor com os desvios padrão de cada feature.
     """
     # Calcula a média de cada feature (coluna)
-    mu = 
+    mu = np.mean(X, axis=0)
 
     # Calcula o desvio padrão de cada feature (coluna)
-    sigma = 
+    sigma = np.std(X, axis=0)
     
     # Normaliza as features subtraindo a média e dividindo pelo desvio padrão
     # Verifica se sigma é zero (o que indicaria que todas as amostras têm o mesmo valor na feature)
@@ -40,7 +40,7 @@ def features_normalize_by_std(X):
     if np.any(sigma == 0):
         sigma[sigma == 0] = 1
     # Normaliza as features
-    X_norm = 
+    X_norm = (X - mu) / sigma
     return X_norm, mu, sigma
 
 
@@ -61,16 +61,86 @@ def features_normalizes_by_min_max(X):
         - max (ndarray): Vetor com os valores máximos de cada feature.
     """
     # Calcula o mínimo de cada feature (coluna)
-    min = 
+    min_val = np.min(X, axis=0)
     # Calcula o máximo de cada feature (coluna)
-    max = 
+    max_val = np.max(X, axis=0)
+    
     # Normaliza as features subtraindo o mínimo e dividindo pela diferença entre máximo e mínimo
     # Verifica se max - min é zero (o que indicaria que todas as amostras têm o mesmo valor na feature)
     # Se max - min for zero, substitui por 1 para evitar divisão por zero
     # Isso garante que a normalização não cause problemas numéricos
     # e que a feature não seja eliminada do conjunto de dados
-    if np.any(max - min == 0):
-        max[min == max] = 1
+    range_val = max_val - min_val
+    if np.any(range_val == 0):
+        range_val[range_val == 0] = 1
+    
     # Normaliza as features
-    X_norm = 
-    return X_norm, min, max
+    X_norm = (X - min_val) / range_val
+    return X_norm, min_val, max_val
+
+
+def revert_z_score_normalization(X_norm, mu, sigma):
+    """
+    Reverte a normalização z-score para recuperar os valores originais.
+    
+    :param (ndarray) X_norm: Matriz normalizada.
+    :param (ndarray) mu: Vetor de médias.
+    :param (ndarray) sigma: Vetor de desvios padrão.
+    :return (ndarray): Matriz com valores originais.
+    """
+    return X_norm * sigma + mu
+
+
+def revert_min_max_normalization(X_norm, min_val, max_val):
+    """
+    Reverte a normalização min-max para recuperar os valores originais.
+    
+    :param (ndarray) X_norm: Matriz normalizada.
+    :param (ndarray) min_val: Vetor de valores mínimos.
+    :param (ndarray) max_val: Vetor de valores máximos.
+    :return (ndarray): Matriz com valores originais.
+    """
+    return X_norm * (max_val - min_val) + min_val
+
+
+if __name__ == "__main__":
+    # Exemplo de uso
+    print("Testando funções de normalização...")
+    
+    # Cria dados de exemplo
+    X = np.array([
+        [100, 2],
+        [120, 3],
+        [150, 4],
+        [80, 2],
+        [200, 4]
+    ])
+    
+    print("\nDados originais:")
+    print(X)
+    
+    # Testa normalização z-score
+    X_norm_z, mu, sigma = features_normalize_by_std(X)
+    print("\nNormalização Z-score:")
+    print("Dados normalizados:")
+    print(X_norm_z)
+    print("Média:", mu)
+    print("Desvio padrão:", sigma)
+    
+    # Reverte normalização z-score
+    X_original = revert_z_score_normalization(X_norm_z, mu, sigma)
+    print("\nDados originais recuperados (z-score):")
+    print(X_original)
+    
+    # Testa normalização min-max
+    X_norm_mm, min_val, max_val = features_normalizes_by_min_max(X)
+    print("\nNormalização Min-Max:")
+    print("Dados normalizados:")
+    print(X_norm_mm)
+    print("Mínimos:", min_val)
+    print("Máximos:", max_val)
+    
+    # Reverte normalização min-max
+    X_original = revert_min_max_normalization(X_norm_mm, min_val, max_val)
+    print("\nDados originais recuperados (min-max):")
+    print(X_original)
